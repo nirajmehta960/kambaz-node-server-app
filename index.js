@@ -9,6 +9,7 @@ import UserRoutes from "./Kambaz/Users/routes.js";
 import CourseRoutes from "./Kambaz/Courses/routes.js";
 import Modules from "./Kambaz/Modules/routes.js";
 import AssignmentsRoutes from "./Kambaz/Assignments/routes.js";
+import EnrollmentsRoutes from "./Kambaz/Enrollments/route.js";
 
 const app = express();
 app.use(
@@ -17,11 +18,13 @@ app.use(
     origin: process.env.CLIENT_URL || "http://localhost:3000",
   })
 );
+
 const sessionOptions = {
   secret: process.env.SESSION_SECRET || "kambaz",
   resave: false,
   saveUninitialized: false,
 };
+
 if (process.env.SERVER_ENV !== "development") {
   sessionOptions.proxy = true;
   sessionOptions.cookie = {
@@ -37,6 +40,7 @@ UserRoutes(app, db);
 CourseRoutes(app, db);
 Modules(app, db);
 AssignmentsRoutes(app, db);
+EnrollmentsRoutes(app, db);
 Hello(app);
 Lab5(app);
 app.listen(process.env.PORT || 4000);
