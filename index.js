@@ -20,7 +20,7 @@ app.use(
 );
 
 const sessionOptions = {
-  secret: process.env.SESSION_SECRET || "kambaz",
+  secret: process.env.SESSION_SECRET || "kambaz-app",
   resave: false,
   saveUninitialized: false,
 };
@@ -43,4 +43,6 @@ AssignmentsRoutes(app, db);
 EnrollmentsRoutes(app, db);
 Hello(app);
 Lab5(app);
-app.listen(process.env.PORT || 4000);
+
+const port = process.env.PORT || 4000;
+app.listen(port);
