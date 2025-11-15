@@ -37,11 +37,18 @@ export default function EnrollmentsRoutes(app, db) {
     res.json(enrollments);
   };
 
-  const findUsersForCourse = (req, res) => {
-    const { courseId } = req.params;
-    const userIds = dao.findUsersForCourse(courseId);
-    const users = userIds.map((userId) => usersDao.findUserById(userId)).filter(Boolean);
-    res.json(users);
+  const findUsersForCourse = async (req, res) => {
+    try {
+      const { courseId } = req.params;
+      const userIds = dao.findUsersForCourse(courseId);
+      const userPromises = userIds.map((userId) => usersDao.findUserById(userId));
+      const users = await Promise.all(userPromises);
+      const validUsers = users.filter((user) => user !== null && user !== undefined);
+      res.json(validUsers);
+    } catch (error) {
+      console.error("Error in findUsersForCourse:", error);
+      res.status(500).json({ error: "Failed to fetch users for course" });
+    }
   };
 
   const enrollUserInCourseByFaculty = (req, res) => {
