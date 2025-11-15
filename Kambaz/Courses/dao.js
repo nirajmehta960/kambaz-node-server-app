@@ -6,15 +6,23 @@ export default function CoursesDao(db) {
     return model.find();
   }
   async function findCoursesForEnrolledUser(userId) {
-    const { enrollments } = db;
-    const courses = await model.find();
-    const enrolledCourses = courses.filter((course) =>
-      enrollments.some(
-        (enrollment) =>
-          enrollment.user === userId && enrollment.course === course._id
-      )
-    );
-    return enrolledCourses;
+    try {
+      const { enrollments } = db || {};
+      const courses = await model.find();
+      if (!enrollments || !Array.isArray(enrollments)) {
+        return courses; // Return all courses if enrollments not available
+      }
+      const enrolledCourses = courses.filter((course) =>
+        enrollments.some(
+          (enrollment) =>
+            enrollment.user === userId && enrollment.course === course._id
+        )
+      );
+      return enrolledCourses;
+    } catch (error) {
+      console.error("Error in findCoursesForEnrolledUser:", error);
+      throw error;
+    }
   }
 
   async function createCourse(course) {
@@ -23,11 +31,17 @@ export default function CoursesDao(db) {
   }
 
   async function deleteCourse(courseId) {
-    const { enrollments } = db;
-    db.enrollments = enrollments.filter(
-      (enrollment) => enrollment.course !== courseId
-    );
-    return model.deleteOne({ _id: courseId });
+    try {
+      if (db && db.enrollments && Array.isArray(db.enrollments)) {
+        db.enrollments = db.enrollments.filter(
+          (enrollment) => enrollment.course !== courseId
+        );
+      }
+      return model.deleteOne({ _id: courseId });
+    } catch (error) {
+      console.error("Error in deleteCourse:", error);
+      throw error;
+    }
   }
 
   async function updateCourse(courseId, courseUpdates) {

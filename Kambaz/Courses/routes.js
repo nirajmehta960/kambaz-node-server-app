@@ -1,9 +1,9 @@
 import CoursesDao from "./dao.js";
 import EnrollmentsDao from "../Enrollments/dao.js";
 
-export default function CourseRoutes(app) {
-  const dao = CoursesDao();
-  const enrollmentsDao = EnrollmentsDao();
+export default function CourseRoutes(app, db) {
+  const dao = CoursesDao(db);
+  const enrollmentsDao = EnrollmentsDao(db);
 
   const createCourse = async (req, res) => {
     const currentUser = req.session["currentUser"];
@@ -13,19 +13,32 @@ export default function CourseRoutes(app) {
   };
   app.post("/api/users/current/courses", createCourse);
 
-  const findCoursesForEnrolledUser = async (req, res) => {
-    let { userId } = req.params;
-    if (userId === "current") {
+  const findCoursesForCurrentUser = async (req, res) => {
+    try {
       const currentUser = req.session["currentUser"];
       if (!currentUser) {
         res.sendStatus(401);
         return;
       }
-      userId = currentUser._id;
+      const courses = await dao.findCoursesForEnrolledUser(currentUser._id);
+      res.json(courses);
+    } catch (error) {
+      console.error("Error in findCoursesForCurrentUser route:", error);
+      res.status(500).json({ error: "Failed to fetch courses for user" });
     }
-    const courses = await dao.findCoursesForEnrolledUser(userId);
-    res.json(courses);
   };
+
+  const findCoursesForEnrolledUser = async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const courses = await dao.findCoursesForEnrolledUser(userId);
+      res.json(courses);
+    } catch (error) {
+      console.error("Error in findCoursesForEnrolledUser route:", error);
+      res.status(500).json({ error: "Failed to fetch courses for user" });
+    }
+  };
+  app.get("/api/users/current/courses", findCoursesForCurrentUser);
   app.get("/api/users/:userId/courses", findCoursesForEnrolledUser);
 
   const findAllCourses = async (req, res) => {
@@ -35,9 +48,14 @@ export default function CourseRoutes(app) {
   app.get("/api/courses", findAllCourses);
 
   const deleteCourse = async (req, res) => {
-    const { courseId } = req.params;
-    const status = await dao.deleteCourse(courseId);
-    res.send(status);
+    try {
+      const { courseId } = req.params;
+      const status = await dao.deleteCourse(courseId);
+      res.json(status);
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      res.status(500).json({ error: "Failed to delete course" });
+    }
   };
   app.delete("/api/courses/:courseId", deleteCourse);
 
