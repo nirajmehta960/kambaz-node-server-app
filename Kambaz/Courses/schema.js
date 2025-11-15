@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import modulesSchema from "../Modules/schema.js";
 
 const courseSchema = new mongoose.Schema(
   {
@@ -7,6 +8,7 @@ const courseSchema = new mongoose.Schema(
     number: String,
     credits: Number,
     description: String,
+    modules: [modulesSchema],
   },
   { collection: "courses" }
 );

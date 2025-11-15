@@ -3,12 +3,13 @@ import model from "./model.js";
 
 export default function CoursesDao(db) {
   async function findAllCourses() {
-    return model.find();
+    return model.find({}, { name: 1, description: 1 });
   }
+
   async function findCoursesForEnrolledUser(userId) {
     try {
       const { enrollments } = db || {};
-      const courses = await model.find();
+      const courses = await model.find({}, { name: 1, description: 1 });
       if (!enrollments || !Array.isArray(enrollments)) {
         return courses; // Return all courses if enrollments not available
       }
