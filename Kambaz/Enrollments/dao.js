@@ -32,7 +32,7 @@ export default function EnrollmentsDao(db) {
   async function enrollUserInCourse(user, course) {
     try {
       const newEnrollment = { user, course, _id: `${user}-${course}` };
-      return model.create(newEnrollment);
+      return await model.create(newEnrollment);
     } catch (error) {
       console.error("Error in enrollUserInCourse:", error);
       throw error;
@@ -41,7 +41,7 @@ export default function EnrollmentsDao(db) {
 
   async function unenrollUserFromCourse(user, course) {
     try {
-      return model.deleteOne({ user, course });
+      return await model.deleteOne({ user, course });
     } catch (error) {
       console.error("Error in unenrollUserFromCourse:", error);
       throw error;

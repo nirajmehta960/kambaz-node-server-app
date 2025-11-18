@@ -13,6 +13,7 @@ export default function AssignmentsRoutes(app, db) {
       res.status(500).json({ error: "Failed to fetch assignments" });
     }
   };
+  app.get("/api/courses/:courseId/assignments", findAssignmentsForCourse);
 
   const createAssignmentForCourse = async (req, res) => {
     try {
@@ -28,6 +29,7 @@ export default function AssignmentsRoutes(app, db) {
       res.status(500).json({ error: "Failed to create assignment" });
     }
   };
+  app.post("/api/courses/:courseId/assignments", createAssignmentForCourse);
 
   const deleteAssignment = async (req, res) => {
     try {
@@ -39,6 +41,7 @@ export default function AssignmentsRoutes(app, db) {
       res.status(500).json({ error: "Failed to delete assignment" });
     }
   };
+  app.delete("/api/assignments/:assignmentId", deleteAssignment);
 
   const updateAssignment = async (req, res) => {
     try {
@@ -58,9 +61,5 @@ export default function AssignmentsRoutes(app, db) {
       res.status(500).json({ error: "Failed to update assignment" });
     }
   };
-
-  app.get("/api/courses/:courseId/assignments", findAssignmentsForCourse);
-  app.post("/api/courses/:courseId/assignments", createAssignmentForCourse);
-  app.delete("/api/assignments/:assignmentId", deleteAssignment);
   app.put("/api/assignments/:assignmentId", updateAssignment);
 }

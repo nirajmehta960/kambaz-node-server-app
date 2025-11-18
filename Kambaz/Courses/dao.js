@@ -1,9 +1,14 @@
-import { v4 as uuidv4 } from "uuid";
 import model from "./model.js";
+import { v4 as uuidv4 } from "uuid";
 
 export default function CoursesDao(db) {
   async function findAllCourses() {
-    return model.find({}, { name: 1, description: 1 });
+    try {
+      return await model.find({}, { name: 1, description: 1 });
+    } catch (error) {
+      console.error("Error in findAllCourses:", error);
+      throw error;
+    }
   }
 
   async function findCoursesForEnrolledUser(userId) {
@@ -27,8 +32,13 @@ export default function CoursesDao(db) {
   }
 
   async function createCourse(course) {
-    const newCourse = { ...course, _id: uuidv4() };
-    return model.create(newCourse);
+    try {
+      const newCourse = { ...course, _id: uuidv4() };
+      return await model.create(newCourse);
+    } catch (error) {
+      console.error("Error in createCourse:", error);
+      throw error;
+    }
   }
 
   async function deleteCourse(courseId) {
@@ -38,7 +48,7 @@ export default function CoursesDao(db) {
           (enrollment) => enrollment.course !== courseId
         );
       }
-      return model.deleteOne({ _id: courseId });
+      return await model.deleteOne({ _id: courseId });
     } catch (error) {
       console.error("Error in deleteCourse:", error);
       throw error;
@@ -46,7 +56,12 @@ export default function CoursesDao(db) {
   }
 
   async function updateCourse(courseId, courseUpdates) {
-    return model.updateOne({ _id: courseId }, { $set: courseUpdates });
+    try {
+      return await model.updateOne({ _id: courseId }, { $set: courseUpdates });
+    } catch (error) {
+      console.error("Error in updateCourse:", error);
+      throw error;
+    }
   }
 
   return {
