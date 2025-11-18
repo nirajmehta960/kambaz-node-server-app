@@ -5,9 +5,9 @@ export default function ModulesRoutes(app, db) {
 
   const findModulesForCourse = async (req, res) => {
     try {
-      const { courseId } = req.params;
-      const modules = await dao.findModulesForCourse(courseId);
-      res.json(modules);
+    const { courseId } = req.params;
+    const modules = await dao.findModulesForCourse(courseId);
+    res.json(modules);
     } catch (error) {
       console.error("Error in findModulesForCourse route:", error);
       res.status(500).json({ error: "Failed to fetch modules" });
@@ -17,9 +17,9 @@ export default function ModulesRoutes(app, db) {
 
   const createModuleForCourse = async (req, res) => {
     try {
-      const { courseId } = req.params;
+    const { courseId } = req.params;
       const module = { ...req.body };
-      const newModule = await dao.createModule(courseId, module);
+    const newModule = await dao.createModule(courseId, module);
       res.json(newModule);
     } catch (error) {
       console.error("Error in createModuleForCourse route:", error);
@@ -30,8 +30,8 @@ export default function ModulesRoutes(app, db) {
 
   const deleteModule = async (req, res) => {
     try {
-      const { moduleId } = req.params;
-      const status = await dao.deleteModule(moduleId);
+    const { moduleId } = req.params;
+    const status = await dao.deleteModule(moduleId);
       res.json(status);
     } catch (error) {
       console.error("Error in deleteModule route:", error);
@@ -42,9 +42,9 @@ export default function ModulesRoutes(app, db) {
 
   const updateModule = async (req, res) => {
     try {
-      const { moduleId } = req.params;
-      const moduleUpdates = req.body;
-      const status = await dao.updateModule(moduleId, moduleUpdates);
+    const { moduleId } = req.params;
+    const moduleUpdates = req.body;
+    const status = await dao.updateModule(moduleId, moduleUpdates);
       res.json(status);
     } catch (error) {
       console.error("Error in updateModule route:", error);

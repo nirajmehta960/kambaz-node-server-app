@@ -7,14 +7,14 @@ export default function CourseRoutes(app, db) {
 
   const createCourse = async (req, res) => {
     try {
-      const currentUser = req.session["currentUser"];
+    const currentUser = req.session["currentUser"];
       if (!currentUser) {
         res.sendStatus(401);
         return;
       }
-      const newCourse = await dao.createCourse(req.body);
+    const newCourse = await dao.createCourse(req.body);
       await enrollmentsDao.enrollUserInCourse(currentUser._id, newCourse._id);
-      res.json(newCourse);
+    res.json(newCourse);
     } catch (error) {
       console.error("Error in createCourse route:", error);
       res.status(500).json({ error: "Failed to create course" });
@@ -40,8 +40,8 @@ export default function CourseRoutes(app, db) {
   const findCoursesForEnrolledUser = async (req, res) => {
     try {
       const { userId } = req.params;
-      const courses = await dao.findCoursesForEnrolledUser(userId);
-      res.json(courses);
+    const courses = await dao.findCoursesForEnrolledUser(userId);
+    res.json(courses);
     } catch (error) {
       console.error("Error in findCoursesForEnrolledUser route:", error);
       res.status(500).json({ error: "Failed to fetch courses for user" });
@@ -58,8 +58,8 @@ export default function CourseRoutes(app, db) {
 
   const deleteCourse = async (req, res) => {
     try {
-      const { courseId } = req.params;
-      const status = await dao.deleteCourse(courseId);
+    const { courseId } = req.params;
+    const status = await dao.deleteCourse(courseId);
       res.json(status);
     } catch (error) {
       console.error("Error deleting course:", error);

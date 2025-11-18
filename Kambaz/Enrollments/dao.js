@@ -4,7 +4,10 @@ export default function EnrollmentsDao(db) {
   async function findCoursesForUser(userId) {
     try {
       const enrollments = await model.find({ user: userId }).populate("course");
-      return enrollments.map((enrollment) => enrollment.course);
+      // Filter out null courses in case populate fails for some enrollments
+      return enrollments
+        .map((enrollment) => enrollment.course)
+        .filter((course) => course !== null && course !== undefined);
     } catch (error) {
       console.error("Error in findCoursesForUser:", error);
       throw error;
@@ -16,7 +19,10 @@ export default function EnrollmentsDao(db) {
       const enrollments = await model
         .find({ course: courseId })
         .populate("user");
-      return enrollments.map((enrollment) => enrollment.user);
+      // Filter out null users in case populate fails for some enrollments
+      return enrollments
+        .map((enrollment) => enrollment.user)
+        .filter((user) => user !== null && user !== undefined);
     } catch (error) {
       console.error("Error in findUsersForCourse:", error);
       throw error;
