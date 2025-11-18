@@ -1,42 +1,51 @@
-import { v4 as uuidv4 } from "uuid";
+import model from "./model.js";
 
 export default function EnrollmentsDao(db) {
-  function enrollUserInCourse(userId, courseId) {
-    const { enrollments } = db;
-    const existing = enrollments.find(
-      (e) => e.user === userId && e.course === courseId
-    );
-    if (existing) {
-      return existing;
+  async function findCoursesForUser(userId) {
+    try {
+      const enrollments = await model.find({ user: userId }).populate("course");
+      return enrollments.map((enrollment) => enrollment.course);
+    } catch (error) {
+      console.error("Error in findCoursesForUser:", error);
+      throw error;
     }
-    const newEnrollment = { _id: uuidv4(), user: userId, course: courseId };
-    enrollments.push(newEnrollment);
-    return newEnrollment;
   }
 
-  function unenrollUserFromCourse(userId, courseId) {
-    const { enrollments } = db;
-    const initialLength = enrollments.length;
-    db.enrollments = enrollments.filter(
-      (e) => !(e.user === userId && e.course === courseId)
-    );
-    return { status: "ok" };
+  async function findUsersForCourse(courseId) {
+    try {
+      const enrollments = await model
+        .find({ course: courseId })
+        .populate("user");
+      return enrollments.map((enrollment) => enrollment.user);
+    } catch (error) {
+      console.error("Error in findUsersForCourse:", error);
+      throw error;
+    }
   }
 
-  function findEnrollmentsForUser(userId) {
-    return db.enrollments.filter((e) => e.user === userId);
+  async function enrollUserInCourse(user, course) {
+    try {
+      const newEnrollment = { user, course, _id: `${user}-${course}` };
+      return model.create(newEnrollment);
+    } catch (error) {
+      console.error("Error in enrollUserInCourse:", error);
+      throw error;
+    }
   }
 
-  function findUsersForCourse(courseId) {
-    const { enrollments } = db;
-    const courseEnrollments = enrollments.filter((e) => e.course === courseId);
-    return courseEnrollments.map((e) => e.user);
+  async function unenrollUserFromCourse(user, course) {
+    try {
+      return model.deleteOne({ user, course });
+    } catch (error) {
+      console.error("Error in unenrollUserFromCourse:", error);
+      throw error;
+    }
   }
 
   return {
+    findCoursesForUser,
+    findUsersForCourse,
     enrollUserInCourse,
     unenrollUserFromCourse,
-    findEnrollmentsForUser,
-    findUsersForCourse,
   };
 }

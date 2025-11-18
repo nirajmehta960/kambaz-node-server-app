@@ -6,10 +6,19 @@ export default function CourseRoutes(app, db) {
   const enrollmentsDao = EnrollmentsDao(db);
 
   const createCourse = async (req, res) => {
-    const currentUser = req.session["currentUser"];
-    const newCourse = await dao.createCourse(req.body);
-    enrollmentsDao.enrollUserInCourse(currentUser._id, newCourse._id);
-    res.json(newCourse);
+    try {
+      const currentUser = req.session["currentUser"];
+      if (!currentUser) {
+        res.sendStatus(401);
+        return;
+      }
+      const newCourse = await dao.createCourse(req.body);
+      await enrollmentsDao.enrollUserInCourse(currentUser._id, newCourse._id);
+      res.json(newCourse);
+    } catch (error) {
+      console.error("Error in createCourse route:", error);
+      res.status(500).json({ error: "Failed to create course" });
+    }
   };
   app.post("/api/users/current/courses", createCourse);
 
@@ -66,4 +75,16 @@ export default function CourseRoutes(app, db) {
     res.send(status);
   };
   app.put("/api/courses/:courseId", updateCourse);
+
+  const findUsersForCourse = async (req, res) => {
+    try {
+      const { cid } = req.params;
+      const users = await enrollmentsDao.findUsersForCourse(cid);
+      res.json(users);
+    } catch (error) {
+      console.error("Error in findUsersForCourse route:", error);
+      res.status(500).json({ error: "Failed to fetch users for course" });
+    }
+  };
+  app.get("/api/courses/:cid/users", findUsersForCourse);
 }
