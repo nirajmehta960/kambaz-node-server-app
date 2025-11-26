@@ -65,7 +65,7 @@ export default function UsersDao() {
 
   const findUserByCredentials = async (username, password) => {
     try {
-      return await model.findOne({ username: username, password: password });
+      return await model.findOne({ username, password });
     } catch (error) {
       console.error("Error in findUserByCredentials:", error);
       throw error;

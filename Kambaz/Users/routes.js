@@ -3,7 +3,7 @@ import CoursesDao from "../Courses/dao.js";
 import EnrollmentsDao from "../Enrollments/dao.js";
 
 export default function UserRoutes(app, db) {
-  const dao = UsersDao(db);
+  const dao = UsersDao();
   const courseDao = CoursesDao(db);
   const enrollmentsDao = EnrollmentsDao(db);
 
