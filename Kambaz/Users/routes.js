@@ -38,7 +38,13 @@ export default function UserRoutes(app, db) {
       res.json(user);
     } catch (error) {
       console.error("Error in createUser route:", error);
-      res.status(500).json({ error: "Failed to create user" });
+      if (error.code === 11000) {
+        res.status(400).json({ error: "Username already exists" });
+      } else {
+        res
+          .status(500)
+          .json({ error: "Failed to create user", details: error.message });
+      }
     }
   };
   app.post("/api/users", createUser);
@@ -134,12 +140,16 @@ export default function UserRoutes(app, db) {
   const signin = async (req, res) => {
     try {
       const { username, password } = req.body;
+      if (!username || !password) {
+        res.status(400).json({ message: "Username and password are required" });
+        return;
+      }
       const currentUser = await dao.findUserByCredentials(username, password);
       if (currentUser) {
         req.session["currentUser"] = currentUser;
         res.json(currentUser);
       } else {
-        res.status(401).json({ message: "Unable to login. Try again later." });
+        res.status(401).json({ message: "Invalid username or password" });
       }
     } catch (error) {
       console.error("Error in signin route:", error);
