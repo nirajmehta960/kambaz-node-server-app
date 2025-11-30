@@ -52,4 +52,17 @@ export default function ModulesRoutes(app, db) {
     }
   };
   app.put("/api/modules/:moduleId", updateModule);
+
+  const addLessonToModule = async (req, res) => {
+    try {
+      const { moduleId } = req.params;
+      const lesson = req.body;
+      const newLesson = await dao.addLessonToModule(moduleId, lesson);
+      res.json(newLesson);
+    } catch (error) {
+      console.error("Error in addLessonToModule route:", error);
+      res.status(500).json({ error: "Failed to add lesson" });
+    }
+  };
+  app.post("/api/modules/:moduleId/lessons", addLessonToModule);
 }
